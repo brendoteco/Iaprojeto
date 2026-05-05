@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Aura IA">
+    <meta name="description" content="Assistente de IA com voz, aprendizado contínuo e pesquisa web inteligente">
+    
+    <title>🧠 Aura IA - Assistente Inteligente</title>
+    
+    <!-- PWA Manifest Inline -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQXVyYSBJQSIsInNob3J0X25hbWUiOiJBdXJhIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwYTBhMGYiLCJ0aGVtZV9jb2xvciI6IiMwYTBhMGYiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ2NpcmNsZSBjeD0nNTAnIGN5PSc1MCcgcj0nNDUnIGZpbGw9JyMzYjgyZjYnLz4lM0N0ZXh0IHg9JzUwJyB5PSc2NScgZm9udC1zaXplPSc1MCcgdGV4dC1hbmNob3I9J21pZGRsZScgZmlsbD0nd2hpdGUnJTNF8J+OryUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #0a0a0f;
+            --surface: #13131f;
+            --surface-2: #1c1c2e;
+            --surface-3: #252540;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.06);
+            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-2: linear-gradient(135deg, #ec4899, #f43f5e);
+            --gradient-3: linear-gradient(135deg, #06b6d4, #3b82f6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        /* Partículas de fundo */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Status Bar iOS */
+        .status-bar {
+            height: env(safe-area-inset-top);
+            background: transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        /* Header */
+        .header {
+            padding: 1rem 1.25rem;
+            padding-top: calc(1rem + env(safe-area-inset-top));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .brand-icon::after {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .brand-text h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-text p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: -2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .header-btn:active {
+            transform: scale(0.92);
+            background: var(--surface-2);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .status-dot.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .status-dot.listening { background: var(--warning); animation: pulse 1.2s infinite; }
+        .status-dot.thinking { background: var(--accent); animation: pulse 0.8s infinite; }
+        .status-dot.speaking { background: var(--primary); animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            gap: 1rem;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+            padding-bottom: calc(140px + env(safe-area-inset-bottom));
+        }
+
+        /* Visualizador Neural */
+        .neural-core {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 220px;
+            position: relative;
+            margin: 0.5rem 0;
+        }
+
+        .core-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1.5px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .core-ring:nth-child(1) { width: 80px; height: 80px; border-color: var(--primary); opacity: 0.6; }
+        .core-ring:nth-child(2) { width: 130px; height: 130px; border-color: var(--secondary); opacity: 0.4; }
+        .core-ring:nth-child(3) { width: 180px; height: 180px; border-color: var(--accent); opacity: 0.2; }
+
+        .neural-core.active .core-ring {
+            animation: neural-pulse 2s infinite;
+        }
+
+        .neural-core.active .core-ring:nth-child(1) { animation-delay: 0s; }
+        .neural-core.active .core-ring:nth-child(2) { animation-delay: 0.4s; }
+        .neural-core.active .core-ring:nth-child(3) { animation-delay: 0.8s; }
+
+        @keyframes neural-pulse {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: scale(1.15) rotate(180deg); opacity: 0.3; }
+            100% { transform: scale(1) rotate(360deg); opacity: 0.8; }
+        }
+
+        .core-button {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            font-size: 2.2rem;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 8px 32px var(--primary-glow), inset 0 2px 4px rgba(255,255,255,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .core-button:active { transform: scale(0.95); }
+        
+        .core-button.listening {
+            background: var(--gradient-2);
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.4);
+            animation: core-breathe 1.5s infinite;
+        }
+
+        .core-button.thinking {
+            background: var(--gradient-3);
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.4);
+            animation: core-spin 2s linear infinite;
+        }
+
+        @keyframes core-breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(236, 72, 153, 0.4); }
+            50% { transform: scale(1.08); box-shadow: 0 12px 40px rgba(236, 72, 153, 0.6); }
+        }
+
+        @keyframes core-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.5;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Chat Area */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            animation: message-in 0.3s ease;
+            max-width: 90%;
+        }
+
+        .message.user { align-self: flex-end; flex-direction: row-reverse; margin-left: auto; }
+        .message.assistant { align-self: flex-start; }
+
+        @keyframes message-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar { background: var(--gradient-1); }
+        .message.assistant .message-avatar { background: var(--surface-3); }
+
+        .message-bubble {
+            padding: 0.875rem 1rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: var(--gradient-1);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-bubble {
+            background: var(--surface-2);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .message-meta {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.3rem;
+            padding: 0.5rem 0;
+        }
+
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* Inteligência / Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stat-item {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.875rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-item:active { transform: scale(0.97); }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Comandos Rápidos */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .chip {
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .chip:active {
+            background: var(--surface-3);
+            border-color: var(--primary);
+            color: var(--text);
+            transform: scale(0.97);
+        }
+
+        /* Controles Inferiores */
+        .controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1rem 1.25rem;
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .ctrl-btn:active { transform: scale(0.97); background: var(--surface-2); }
+
+        .ctrl-btn.primary {
+            flex: 1.5;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .ctrl-btn.primary:active { opacity: 0.9; }
+
+        /* Settings Panel */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 199;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.open { opacity: 1; pointer-events: all; }
+
+        .panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg);
+            z-index: 200;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            border-left: 1px solid var(--border);
+        }
+
+        .panel.open { right: 0; }
+
+        .panel-header {
+            padding: 1.5rem;
+            padding-top: calc(1.5rem + env(safe-area-inset-top));
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .setting-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .toggle {
+            width: 52px;
+            height: 30px;
+            background: var(--surface-3);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active { background: var(--primary); }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .toggle.active::after { transform: translateX(22px); }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: calc(1rem + env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--surface);
+            color: var(--text);
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 90vw;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Memória / Contexto */
+        .memory-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Animações */
+        .fade-in { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .core-button { width: 75px; height: 75px; font-size: 1.8rem; }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8fafc;
+                --surface: #ffffff;
+                --surface-2: #f1f5f9;
+                --surface-3: #e2e8f0;
+                --text: #0f172a;
+                --text-muted: #64748b;
+                --border: rgba(0,0,0,0.08);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Partículas -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="brand">
+            <div class="brand-icon">🧠</div>
+            <div class="brand-text">
+                <h1>Aura IA</h1>
+                <p id="statusText">Pronta para aprender</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-pill">
+                <div class="status-dot online" id="statusDot"></div>
+                <span id="statusLabel">Online</span>
+            </div>
+            <button class="header-btn" onclick="togglePanel()">⚙️</button>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        
+        <!-- Neural Core -->
+        <div class="neural-core" id="neuralCore">
+            <div class="core-ring"></div>
+            <div class="core-ring"></div>
+            <div class="core-ring"></div>
+            <button class="core-button" id="coreBtn" onclick="toggleListening()">🎙️</button>
+        </div>
+
+        <!-- Stats de Aprendizado -->
+        <div class="stats-grid">
+            <div class="stat-item" onclick="showMemoryDetails()">
+                <div class="stat-value" id="statInteractions">0</div>
+                <div class="stat-label">Interações</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statMemory">0</div>
+                <div class="stat-label">Memórias</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statLevel">1</div>
+                <div class="stat-label">Nível IA</div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div class="card">
+            <div class="card-header">
+                <span>💬</span>
+                <span>Conversa</span>
+                <span class="memory-indicator" id="memoryIndicator" style="margin-left:auto;display:none;">
+                    <span>🧠</span>
+                    <span>Aprendendo...</span>
+                </span>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div>
+                        <div class="message-bubble">
+                            Olá! Sou a <b>Aura</b>, sua assistente de IA com voz. Posso aprender com nossas conversas, pesquisar na web e me tornar mais inteligente a cada interação. Diga "Ok Aura" ou toque no microfone para começar!
+                        </div>
+                        <div class="message-meta">Agora • Nível 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comandos Inteligentes -->
+        <div class="card">
+            <div class="card-header">
+                <span>⚡</span>
+                <span>Comandos Rápidos</span>
+            </div>
+            <div class="chips">
+                <div class="chip" onclick="sendCommand('Que horas são?')">🕐 Hora</div>
+                <div class="chip" onclick="sendCommand('Pesquisar últimas notícias de tecnologia')">📰 Notícias</div>
+                <div class="chip" onclick="sendCommand('Quem é o presidente do Brasil?')">🌎 Política</div>
+                <div class="chip" onclick="sendCommand('Previsão do tempo para amanhã')">🌤️ Clima</div>
+                <div class="chip" onclick="sendCommand('Me ensine algo novo hoje')">📚 Aprender</div>
+                <div class="chip" onclick="sendCommand('Abrir YouTube')">📺 YouTube</div>
+            </div>
+        </div>
+
+        <!-- Memória Visual -->
+        <div class="card" id="memoryCard" style="display:none;">
+            <div class="card-header">
+                <span>🧠</span>
+                <span>Minha Memória</span>
+            </div>
+            <div id="memoryList" style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">
+            </div>
+        </div>
+    </main>
+
+    <!-- Controles -->
+    <div class="controls">
+        <button class="ctrl-btn" onclick="clearChat()">
+            <span>🗑️</span>
+            <span>Limpar</span>
+        </button>
+        <button class="ctrl-btn primary" id="mainBtn" onclick="toggleListening()">
+            <span id="mainBtnIcon">🎙️</span>
+            <span id="mainBtnText">Ouvir</span>
+        </button>
+        <button class="ctrl-btn" onclick="speakLast()">
+            <span>🔊</span>
+            <span>Repetir</span>
+        </button>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">ℹ️</span>
+        <span id="toastMsg">Mensagem</span>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="overlay" id="overlay" onclick="togglePanel()"></div>
+    <div class="panel" id="panel">
+        <div class="panel-header">
+            <h2 style="font-size:1.2rem;">⚙️ Configurações Avançadas</h2>
+            <button class="header-btn" onclick="togglePanel()">✕</button>
+        </div>
+        <div class="panel-content">
+            <div class="setting-group">
+                <h3 style="font-size:0.9rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;">🎙️ Voz</h3>
+                
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Escuta Contínua</h4>
+                        <p>Manter microfone sempre ativo</p>
+                    </div>
+                    <div class="toggle active" id="togContinuous" onclick="toggleConfig('continuous')"></div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Palavra de Ativação</h4>
+                        <p>Diga "Ok Aura" para começar</p>
+                    </div>
+                    <div class="toggle" id="togWakeWord" onclick="toggleConfig('wakeWord')"></div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Resposta por Voz</h4>
+                        <p>Falar todas as respostas</p>
+                    </div>
+                    <div class="toggle active" id="togVoice" onclick="toggleConfig('voiceResponse')"></div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3 style="font-size:0.9rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;">🧠 Inteligência</h3>
+                
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Aprendizado Contínuo</h4>
+                        <p>Memorizar preferências e contexto</p>
+                    </div>
+                    <div class="toggle active" id="togLearning" onclick="toggleConfig('learning')"></div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Pesquisa Web Automática</h4>
+                        <p>Buscar na internet quando não souber</p>
+                    </div>
+                    <div class="toggle active" id="togSearch" onclick="toggleConfig('autoSearch')"></div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Modo Proativo</h4>
+                        <p>Sugerir comandos baseado no contexto</p>
+                    </div>
+                    <div class="toggle" id="togProactive" onclick="toggleConfig('proactive')"></div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3 style="font-size:0.9rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;">🌐 Idioma</h3>
+                <select id="langSelect" onchange="changeLang()" style="width:100%;padding:0.75rem;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);">
+                    <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+                    <option value="pt-PT">🇵🇹 Português (Portugal)</option>
+                    <option value="en-US">🇺🇸 English</option>
+                    <option value="es-ES">🇪🇸 Español</option>
+                    <option value="fr-FR">🇫🇷 Français</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <h3 style="font-size:0.9rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;">🔊 Voz TTS</h3>
+                <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                    <label style="font-size:0.8rem;color:var(--text-muted);">Velocidade: <span id="rateVal">1.0x</span></label>
+                    <input type="range" id="rateRange" min="0.5" max="2" step="0.1" value="1" oninput="updateRate(this.value)">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;">
+                    <label style="font-size:0.8rem;color:var(--text-muted);">Tom: <span id="pitchVal">1.0</span></label>
+                    <input type="range" id="pitchRange" min="0.5" max="2" step="0.1" value="1" oninput="updatePitch(this.value)">
+                </div>
+            </div>
+
+            <div class="setting-group" style="margin-top:1rem;">
+                <button class="ctrl-btn primary" onclick="exportMemory()" style="width:100%;">
+                    <span>💾</span>
+                    <span>Exportar Memória</span>
+                </button>
+                <button class="ctrl-btn" onclick="resetMemory()" style="width:100%;margin-top:0.5rem;">
+                    <span>🔄</span>
+                    <span>Resetar Memória</span>
+                </button>
+                <button class="ctrl-btn" onclick="installApp()" style="width:100%;margin-top:0.5rem;">
+                    <span>📲</span>
+                    <span>Instalar App</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURAÇÃO GLOBAL ====================
+        const CONFIG = {
+            continuous: true,
+            wakeWord: false,
+            wakeWordPhrase: 'ok aura',
+            voiceResponse: true,
+            learning: true,
+            autoSearch: true,
+            proactive: false,
+            lang: 'pt-BR',
+            rate: 1,
+            pitch: 1,
+            volume: 1,
+            maxHistory: 100,
+            confidenceThreshold: 0.7
+        };
+
+        // ==================== ESTADO DA IA ====================
+        let recognition = null;
+        let synthesis = window.speechSynthesis;
+        let isListening = false;
+        let isSpeaking = false;
+        let isThinking = false;
+        let wakeWordActive = false;
+        let conversationHistory = [];
+        let userMemory = {
+            name: null,
+            preferences: {},
+            facts: [],
+            lastTopics: [],
+            interactionCount: 0,
+            level: 1,
+            createdAt: Date.now()
+        };
+        let lastResponse = '';
+        let restartTimer = null;
+        let db = null;
+
+        // ==================== BASE DE CONHECIMENTO EXPANSÍVEL ====================
+        const knowledgeBase = {
+            // Saudações contextuais
+            greetings: {
+                patterns: ['oi', 'olá', 'ola', 'e aí', 'eae', 'hey', 'hello', 'hi'],
+                responses: (ctx) => {
+                    const hour = new Date().getHours();
+                    let timeGreeting = '';
+                    if (hour < 12) timeGreeting = 'Bom dia';
+                    else if (hour < 18) timeGreeting = 'Boa tarde';
+                    else timeGreeting = 'Boa noite';
+                    
+                    if (ctx.userName) {
+                        return `${timeGreeting}, ${ctx.userName}! ${ctx.interactionCount > 10 ? 'Que bom te ver de novo!' : 'Como posso ajudar hoje?'}`;
+                    }
+                    return `${timeGreeting}! Sou a Aura. Qual é o seu nome?`;
+                }
+            },
+
+            // Despedidas
+            farewells: {
+                patterns: ['tchau', 'adeus', 'até logo', 'ate logo', 'até mais', 'ate mais', 'xau', 'bye'],
+                responses: () => {
+                    const farewells = [
+                        'Até logo! Foi um prazer conversar com você.',
+                        'Tchau! Volte sempre que precisar.',
+                        'Até mais! Estarei aqui quando precisar.',
+                        'Xau! Cuide-se bem.'
+                    ];
+                    return farewells[Math.floor(Math.random() * farewells.length)];
+                }
+            },
+
+            // Agradecimentos
+            thanks: {
+                patterns: ['obrigado', 'obrigada', 'valeu', 'thanks', 'grato', 'agradeço'],
+                responses: (ctx) => {
+                    if (ctx.interactionCount > 5) {
+                        return 'Por nada! Sempre que precisar, é só chamar. Estou aprendendo muito com você!';
+                    }
+                    return 'De nada! Fico feliz em ajudar.';
+                }
+            },
+
+            // Identidade
+            identity: {
+                patterns: ['quem é você', 'quem es tu', 'seu nome', 'como se chama', 'o que você é'],
+                responses: () => 'Sou a Aura, uma assistente de inteligência artificial com voz. Posso aprender com nossas conversas, pesquisar na web e me adaptar às suas preferências. Cada interação me torna mais inteligente!'
+            },
+
+            // Hora
+            time: {
+                patterns: ['hora', 'horas', 'que horas', 'horário'],
+                responses: () => {
+                    const now = new Date();
+                    return `Agora são ${now.getHours()} horas e ${now.getMinutes()} minutos.`;
+                }
+            },
+
+            // Data
+            date: {
+                patterns: ['data', 'dia', 'hoje', 'data de hoje'],
+                responses: () => {
+                    const now = new Date();
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    return `Hoje é ${now.toLocaleDateString('pt-BR', options)}.`;
+                }
+            },
+
+            // Clima (fallback para pesquisa)
+            weather: {
+                patterns: ['tempo', 'clima', 'previsão', 'temperatura', 'vai chover'],
+                responses: () => null // Trigger search
+            },
+
+            // Piadas
+            jokes: {
+                patterns: ['piada', 'engraçado', 'rir', 'humor'],
+                responses: () => {
+                    const jokes = [
+                        'Por que o computador foi ao médico? Porque estava com vírus! 😄',
+                        'O que o zero disse para o oito? Que cinto maneiro! 😂',
+                        'Por que o jacaré tirou o jacarezinho da escola? Porque ele réptil de ano! 🐊',
+                        'Qual é o animal mais antigo? A zebra, porque está em preto e branco! 🦓',
+                        'Por que o esqueleto não brigou com ninguém? Porque não tem estômago para isso! 💀',
+                        'O que é um pontinho amarelo na estrada? Uma laranja apertada! 🍊',
+                        'Por que o livro de matemática se suicidou? Porque tinha muitos problemas! 📚'
+                    ];
+                    return jokes[Math.floor(Math.random() * jokes.length)];
+                }
+            },
+
+            // Sites
+            open: {
+                patterns: ['abrir', 'abre', 'acesse', 'acessar'],
+                responses: (ctx, text) => {
+                    const sites = {
+                        'youtube': ['youtube.com', '📺 Abrindo YouTube...'],
+                        'google': ['google.com', '🔍 Abrindo Google...'],
+                        'whatsapp': ['web.whatsapp.com', '💬 Abrindo WhatsApp Web...'],
+                        'instagram': ['instagram.com', '📸 Abrindo Instagram...'],
+                        'facebook': ['facebook.com', '📘 Abrindo Facebook...'],
+                        'twitter': ['twitter.com', '🐦 Abrrir X/Twitter...'],
+                        'github': ['github.com', '💻 Abrindo GitHub...'],
+                        'netflix': ['netflix.com', '🎬 Abrindo Netflix...'],
+                        'spotify': ['open.spotify.com', '🎵 Abrindo Spotify...']
+                    };
+                    
+                    for (let [site, [url, msg]] of Object.entries(sites)) {
+                        if (text.includes(site)) {
+                            setTimeout(() => window.open(`https://${url}`, '_blank'), 1000);
+                            return msg;
+                        }
+                    }
+                    return null;
+                }
+            },
+
+            // Cálculos
+            math: {
+                patterns: ['calcular', 'quanto é', 'resultado', 'soma', 'mais', 'menos', 'vezes', 'dividido'],
+                responses: (ctx, text) => {
+                    try {
+                        // Extrair expressão matemática
+                        let expr = text.replace(/[^0-9+\-*/().\s]/g, '').trim();
+                        if (expr && expr.length > 2) {
+                            // Substituições para linguagem natural
+                            expr = expr.replace(/x/g, '*').replace(/÷/g, '/');
+                            const result = Function('"use strict"; return (' + expr + ')')();
+                            return `O resultado de ${expr} é ${result}.`;
+                        }
+                    } catch (e) {}
+                    return null;
+                }
+            },
+
+            // Nome do usuário
+            name: {
+                patterns: ['meu nome é', 'me chamo', 'sou o', 'sou a', 'chamo-me'],
+                responses: (ctx, text) => {
+                    const match = text.match(/(?:meu nome é|me chamo|sou o|sou a|chamo-me)\s+([a-záàâãéèêíïóôõöúçñ\s]+)/i);
+                    if (match) {
+                        const name = match[1].trim().split(' ')[0];
+                        userMemory.name = name;
+                        saveMemory();
+                        return `Prazer em conhecê-la, ${name}! Vou me lembrar disso.`;
+                    }
+                    return null;
+                }
+            },
+
+            // Cumprimentos pessoais
+            personal: {
+                patterns: ['como você está', 'tudo bem', 'como vai', 'como ta'],
+                responses: (ctx) => {
+                    if (ctx.userName) {
+                        return `Estou ótima, ${ctx.userName}! Pronta para aprender mais com você hoje. E você, como está?`;
+                    }
+                    return 'Estou ótima! Funcionando a plena capacidade e pronta para aprender. E você, como está?';
+                }
+            },
+
+            // Ajuda
+            help: {
+                patterns: ['ajuda', 'help', 'o que você faz', 'comandos', 'capacidades'],
+                responses: () => `Posso ajudar com:
+• 📅 Hora e data
+• 🌐 Pesquisar na web (diga "pesquisar [assunto]")
+• 🧮 Cálculos matemáticos
+• 📺 Abrir sites (YouTube, Google, etc)
+• 😄 Contar piadas
+• 🧠 Aprender suas preferências
+• 💬 Conversar naturalmente
+
+Diga "Ok Aura" ou toque no microfone!`
+            },
+
+            // Pesquisa explícita
+            search: {
+                patterns: ['pesquisar', 'procurar', 'buscar', 'pesquisa', 'google'],
+                responses: (ctx, text) => null // Trigger web search
+            },
+
+            // Aprendizado
+            learn: {
+                patterns: ['aprenda', 'lembre', 'memorize', 'anote', 'guarde'],
+                responses: (ctx, text) => {
+                    const fact = text.replace(/.*?(aprenda|lembre|memorize|anote|guarde)\s*(que\s*)?/i, '').trim();
+                    if (fact.length > 5) {
+                        userMemory.facts.push({
+                            text: fact,
+                            date: Date.now(),
+                            context: conversationHistory.slice(-3).map(m => m.text)
+                        });
+                        saveMemory();
+                        return `Anotei: "${fact}". Vou me lembrar disso!`;
+                    }
+                    return 'O que você gostaria que eu memorizasse?';
+                }
+            },
+
+            // Recuperar memória
+            recall: {
+                patterns: ['o que você sabe', 'o que lembra', 'me fale sobre', 'o que aprendeu'],
+                responses: (ctx) => {
+                    if (userMemory.facts.length === 0) {
+                        return 'Ainda estou começando a construir minha memória sobre você. Me conte algo para eu guardar!';
+                    }
+                    const facts = userMemory.facts.slice(-3).map(f => `• ${f.text}`).join('\n');
+                    return `Aqui está o que memorizei recentemente:\n${facts}`;
+                }
+            }
+        };
+
+        // ==================== INICIALIZAÇÃO ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            initParticles();
+            initDB();
+            loadMemory();
+            initSpeech();
+            updateStats();
+            
+            // Verificar suporte
+            if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+                showToast('❌', 'Seu navegador não suporta reconhecimento de voz. Use Chrome/Edge.');
+            }
+
+            // Carregar configurações
+            loadConfig();
+            
+            // Registrar SW
+            registerSW();
+        });
+
+        // ==================== BANCO DE DADOS INDEXEDDB ====================
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('AuraDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('conversations')) {
+                        db.createObjectStore('conversations', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('memory')) {
+                        db.createObjectStore('memory', { keyPath: 'key' });
+                    }
+                };
+            });
+        }
+
+        async function saveToDB(store, data) {
+            if (!db) return;
+            const tx = db.transaction(store, 'readwrite');
+            const objectStore = tx.objectStore(store);
+            await objectStore.put(data);
+        }
+
+        async function getFromDB(store, key) {
+            if (!db) return null;
+            return new Promise((resolve) => {
+                const tx = db.transaction(store, 'readonly');
+                const objectStore = tx.objectStore(store);
+                const request = objectStore.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve(null);
+            });
+        }
+
+        // ==================== MEMÓRIA E APRENDIZADO ====================
+        function loadMemory() {
+            const saved = localStorage.getItem('auraMemory');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    userMemory = { ...userMemory, ...parsed };
+                    updateStats();
+                } catch (e) {}
+            }
+            
+            const history = localStorage.getItem('auraHistory');
+            if (history) {
+                try {
+                    conversationHistory = JSON.parse(history);
+                } catch (e) {}
+            }
+        }
+
+        function saveMemory() {
+            localStorage.setItem('auraMemory', JSON.stringify(userMemory));
+            localStorage.setItem('auraHistory', JSON.stringify(conversationHistory.slice(-50)));
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('statInteractions').textContent = userMemory.interactionCount || 0;
+            document.getElementById('statMemory').textContent = (userMemory.facts?.length || 0) + (userMemory.preferences ? Object.keys(userMemory.preferences).length : 0);
+            document.getElementById('statLevel').textContent = calculateLevel();
+        }
+
+        function calculateLevel() {
+            const interactions = userMemory.interactionCount || 0;
+            const facts = userMemory.facts?.length || 0;
+            const score = interactions + (facts * 2);
+            return Math.floor(1 + (score / 10));
+        }
+
+        function learnFromInteraction(text, response, type) {
+            if (!CONFIG.learning) return;
+
+            userMemory.interactionCount++;
+            
+            // Extrair preferências
+            if (text.includes('gosto') || text.includes('prefiro') || text.includes('adoro')) {
+                const pref = text.replace(/.*?(gosto|prefiro|adoro)\s*(de\s*)?/i, '').trim();
+                if (pref.length > 3) {
+                    const category = text.includes('cor') ? 'cor' : 
+                                   text.includes('comida') ? 'comida' :
+                                   text.includes('música') ? 'musica' : 'geral';
+                    userMemory.preferences[category] = pref;
+                }
+            }
+
+            // Detectar tópicos de interesse
+            const topics = ['tecnologia', 'esporte', 'música', 'filme', 'livro', 'comida', 'viagem', 'trabalho'];
+            topics.forEach(topic => {
+                if (text.toLowerCase().includes(topic)) {
+                    if (!userMemory.lastTopics.includes(topic)) {
+                        userMemory.lastTopics.unshift(topic);
+                        if (userMemory.lastTopics.length > 5) userMemory.lastTopics.pop();
+                    }
+                }
+            });
+
+            saveMemory();
+        }
+
+        // ==================== RECONHECIMENTO DE VOZ ====================
+        function initSpeech() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = CONFIG.lang;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                isListening = true;
+                updateUI();
+            };
+
+            recognition.onresult = (event) => {
+                let interim = '';
+                let final = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        final += transcript;
+                    } else {
+                        interim += transcript;
+                    }
+                }
+
+                if (interim) {
+                    updateTranscript(interim, true);
+                }
+
+                if (final) {
+                    updateTranscript(final, false);
+                    processInput(final);
+                }
+            };
+
+            recognition.onerror = (event) => {
+                if (event.error === 'no-speech') return;
+                if (event.error === 'aborted') return;
+                
+                console.error('Speech error:', event.error);
+                
+                if (event.error === 'not-allowed') {
+                    showToast('❌', 'Permissão de microfone negada');
+                    stopListening();
+                } else if (event.error === 'network') {
+                    showToast('⚠️', 'Erro de rede. Reconectando...');
+                    restartListening();
+                }
+            };
+
+            recognition.onend = () => {
+                if (CONFIG.continuous && isListening) {
+                    restartTimer = setTimeout(() => {
+                        if (isListening) {
+                            try { recognition.start(); } catch(e) {}
+                        }
+                    }, 250);
+                } else {
+                    isListening = false;
+                    updateUI();
+                }
+            };
+        }
+
+        function toggleListening() {
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
+            }
+        }
+
+        function startListening() {
+            if (!recognition) {
+                showToast('❌', 'Reconhecimento de voz não disponível');
+                return;
+            }
+            try {
+                recognition.start();
+                wakeWordActive = !CONFIG.wakeWord;
+            } catch (e) {
+                showToast('⚠️', 'Erro ao iniciar microfone');
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            wakeWordActive = false;
+            if (restartTimer) clearTimeout(restartTimer);
+            if (recognition) {
+                try { recognition.stop(); } catch (e) {}
+                try { recognition.abort(); } catch (e) {}
+            }
+            updateUI();
+        }
+
+        function restartListening() {
+            if (recognition && isListening) {
+                try { recognition.stop(); } catch(e) {}
+                setTimeout(() => {
+                    if (isListening) {
+                        try { recognition.start(); } catch(e) {}
+                    }
+                }, 300);
+            }
+        }
+
+        // ==================== PROCESSAMENTO DE ENTRADA ====================
+        async function processInput(text) {
+            if (!text.trim()) return;
+
+            // Verificar wake word
+            if (CONFIG.wakeWord && !wakeWordActive) {
+                if (text.toLowerCase().includes(CONFIG.wakeWordPhrase)) {
+                    wakeWordActive = true;
+                    showToast('🎙️', 'Aura ativada! Fale seu comando.');
+                    speak('Estou ouvindo!');
+                    return;
+                }
+                return;
+            }
+
+            // Adicionar à conversa
+            addMessage('user', text);
+            
+            // Mostrar indicador de digitação
+            showTyping();
+
+            // Processar
+            isThinking = true;
+            updateUI();
+
+            try {
+                const response = await generateResponse(text);
+                hideTyping();
+                addMessage('assistant', response);
+                
+                if (CONFIG.voiceResponse) {
+                    speak(response);
+                }
+                
+                learnFromInteraction(text, response, 'conversation');
+            } catch (e) {
+                hideTyping();
+                addMessage('assistant', 'Desculpe, tive um problema ao processar. Pode repetir?');
+            }
+
+            isThinking = false;
+            updateUI();
+        }
+
+        async function generateResponse(text) {
+            const lowerText = text.toLowerCase();
+            const ctx = {
+                userName: userMemory.name,
+                interactionCount: userMemory.interactionCount,
+                preferences: userMemory.preferences,
+                lastTopics: userMemory.lastTopics
+            };
+
+            // Verificar base de conhecimento
+            for (let [key, data] of Object.entries(knowledgeBase)) {
+                for (let pattern of data.patterns) {
+                    if (lowerText.includes(pattern)) {
+                        const response = typeof data.responses === 'function' 
+                            ? data.responses(ctx, text) 
+                            : data.responses;
+                        
+                        if (response !== null) {
+                            return response;
+                        }
+                        // null = trigger search
+                        break;
+                    }
+                }
+            }
+
+            // Verificar memória factual
+            for (let fact of userMemory.facts || []) {
+                if (lowerText.includes(fact.text.toLowerCase().substring(0, 10))) {
+                    return `Lembro que você me disse: "${fact.text}". Isso ainda é válido?`;
+                }
+            }
+
+            // Fallback para pesquisa web
+            if (CONFIG.autoSearch) {
+                return await searchWeb(text);
+            }
+
+            return 'Não tenho certeza como responder isso. Posso pesquisar na web se você ativar a pesquisa automática nas configurações!';
+        }
+
+        // ==================== PESQUISA WEB ====================
+        async function searchWeb(query) {
+            try {
+                // Usar DuckDuckGo Instant Answer API (gratuito, sem chave)
+                const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1&t=AuraAssistant`;
+                
+                // Tentar múltiplas fontes
+                const sources = [
+                    // Wikipedia API (gratuito)
+                    fetch(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query.split(' ').slice(0, 3).join('_'))}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(() => null),
+                    
+                    // DuckDuckGo
+                    fetch(ddgUrl)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(() => null)
+                ];
+
+                // Também tentar abrir busca visual
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                
+                // Resposta inteligente baseada na query
+                const smartResponses = {
+                    'presidente': 'O presidente do Brasil atualmente é Luiz Inácio Lula da Silva, que iniciou seu terceiro mandato em 2023.',
+                    'clima': 'Para verificar o clima atual, vou abrir a previsão do tempo para você.',
+                    'notícias': 'Vou buscar as últimas notícias sobre tecnologia para você.',
+                    'bitcoin': 'O preço do Bitcoin varia constantemente. Vou buscar o valor atual.',
+                    'dólar': 'A cotação do dólar muda diariamente. Deixe-me buscar o valor atual.'
+                };
+
+                for (let [key, resp] of Object.entries(smartResponses)) {
+                    if (query.toLowerCase().includes(key)) {
+                        if (key === 'clima' || key === 'notícias' || key === 'bitcoin' || key === 'dólar') {
+                            setTimeout(() => window.open(searchUrl, '_blank'), 2000);
+                        }
+                        return resp + ' (Abrindo resultados...)';
+                    }
+                }
+
+                // Tentar Wikipedia primeiro
+                const wikiResp = await sources[0];
+                if (wikiResp && wikiResp.extract) {
+                    const summary = wikiResp.extract.substring(0, 300);
+                    return `Segundo a Wikipedia: ${summary}${wikiResp.extract.length > 300 ? '...' : ''}\n\nPosso abrir mais detalhes se quiser!`;
+                }
+
+                // Fallback genérico com busca
+                setTimeout(() => window.open(searchUrl, '_blank'), 1500);
+                return `Não tenho essa informação específica em minha base, mas vou pesquisar "${query}" no Google para você!`;
+
+            } catch (e) {
+                return `Não consegui pesquisar agora, mas você pode verificar em: https://google.com/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // ==================== SÍNTESE DE VOZ ====================
+        function speak(text) {
+            if (!synthesis) return;
+
+            // Limpar tags HTML e emojis para TTS
+            const cleanText = text.replace(/<[^>]*>/g, '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '');
+            
+            synthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = CONFIG.lang;
+            utterance.rate = CONFIG.rate;
+            utterance.pitch = CONFIG.pitch;
+            utterance.volume = CONFIG.volume;
+
+            // Selecionar voz melhor
+            const voices = synthesis.getVoices();
+            const ptVoice = voices.find(v => v.lang.includes('pt')) || voices[0];
+            if (ptVoice) utterance.voice = ptVoice;
+
+            utterance.onstart = () => {
+                isSpeaking = true;
+                updateUI();
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                updateUI();
+            };
+
+            synthesis.speak(utterance);
+        }
+
+        function speakLast() {
+            if (lastResponse) speak(lastResponse);
+            else showToast('ℹ️', 'Nenhuma resposta para repetir');
+        }
+
+        // ==================== UI UPDATES ====================
+        function updateUI() {
+            const core = document.getElementById('neuralCore');
+            const btn = document.getElementById('coreBtn');
+            const mainBtn = document.getElementById('mainBtn');
+            const mainIcon = document.getElementById('mainBtnIcon');
+            const mainText = document.getElementById('mainBtnText');
+            const dot = document.getElementById('statusDot');
+            const label = document.getElementById('statusLabel');
+            const statusText = document.getElementById('statusText');
+
+            // Reset classes
+            btn.classList.remove('listening', 'thinking');
+            core.classList.remove('active');
+            dot.className = 'status-dot';
+
+            if (isSpeaking) {
+                btn.classList.add('thinking');
+                dot.classList.add('speaking');
+                label.textContent = 'Falando';
+                statusText.textContent = 'Respondendo por voz...';
+            } else if (isThinking) {
+                btn.classList.add('thinking');
+                core.classList.add('active');
+                dot.classList.add('thinking');
+                label.textContent = 'Pensando';
+                statusText.textContent = 'Processando informações...';
+            } else if (isListening) {
+                btn.classList.add('listening');
+                core.classList.add('active');
+                dot.classList.add('listening');
+                label.textContent = 'Ouvindo';
+                statusText.textContent = 'Diga algo...';
+            } else {
+                dot.classList.add('online');
+                label.textContent = 'Online';
+                statusText.textContent = CONFIG.wakeWord ? 'Diga "Ok Aura"' : 'Toque no microfone';
+            }
+
+            mainIcon.textContent = isListening ? '⏹️' : '🎙️';
+            mainText.textContent = isListening ? 'Parar' : 'Ouvir';
+            btn.textContent = isListening ? '⏹️' : isThinking ? '⚡' : '🎙️';
+        }
+
+        function addMessage(role, text) {
+            const container = document.getElementById('chatContainer');
+            const msg = document.createElement('div');
+            msg.className = `message ${role} fade-in`;
+            
+            const avatar = role === 'user' ? (userMemory.name ? userMemory.name[0].toUpperCase() : '👤') : '🤖';
+            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const level = calculateLevel();
+            
+            msg.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div>
+                    <div class="message-bubble">${escapeHtml(text)}</div>
+                    <div class="message-meta">${time} • Nível ${level}</div>
+                </div>
+            `;
+            
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+            
+            // Salvar no histórico
+            conversationHistory.push({ role, text, time: Date.now() });
+            if (conversationHistory.length > CONFIG.maxHistory) {
+                conversationHistory.shift();
+            }
+            saveMemory();
+            
+            if (role === 'assistant') {
+                lastResponse = text;
+            }
+        }
+
+        function updateTranscript(text, isInterim) {
+            // Visual feedback durante escuta
+            if (isInterim && isListening) {
+                document.getElementById('statusText').textContent = `Ouvindo: "${text.substring(0, 30)}${text.length > 30 ? '...' : ''}"`;
+            }
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chatContainer');
+            const typing = document.createElement('div');
+            typing.id = 'typingIndicator';
+            typing.className = 'message assistant fade-in';
+            typing.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const el = document.getElementById('typingIndicator');
+            if (el) el.remove();
+        }
+
+        function clearChat() {
+            const container = document.getElementById('chatContainer');
+            container.innerHTML = `
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div>
+                        <div class="message-bubble">Conversa limpa! Como posso ajudar agora?</div>
+                        <div class="message-meta">Agora • Nível ${calculateLevel()}</div>
+                    </div>
+                </div>
+            `;
+            conversationHistory = [];
+            saveMemory();
+        }
+
+        // ==================== COMANDOS RÁPIDOS ====================
+        function sendCommand(text) {
+            document.getElementById('statusText').textContent = `Comando: ${text}`;
+            processInput(text);
+        }
+
+        // ==================== CONFIGURAÇÕES ====================
+        function togglePanel() {
+            document.getElementById('panel').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        }
+
+        function toggleConfig(key) {
+            CONFIG[key] = !CONFIG[key];
+            document.getElementById(`tog${key.charAt(0).toUpperCase() + key.slice(1)}`).classList.toggle('active');
+            saveConfig();
+            
+            if (key === 'continuous' && CONFIG.continuous && !isListening) {
+                startListening();
+            }
+            
+            showToast('✅', `${key} ${CONFIG[key] ? 'ativado' : 'desativado'}`);
+        }
+
+        function changeLang() {
+            CONFIG.lang = document.getElementById('langSelect').value;
+            if (recognition) recognition.lang = CONFIG.lang;
+            saveConfig();
+            showToast('🌐', `Idioma: ${CONFIG.lang}`);
+        }
+
+        function updateRate(val) {
+            CONFIG.rate = parseFloat(val);
+            document.getElementById('rateVal').textContent = val + 'x';
+            saveConfig();
+        }
+
+        function updatePitch(val) {
+            CONFIG.pitch = parseFloat(val);
+            document.getElementById('pitchVal').textContent = val;
+            saveConfig();
+        }
+
+        function saveConfig() {
+            localStorage.setItem('auraConfig', JSON.stringify(CONFIG));
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('auraConfig');
+            if (saved) {
+                Object.assign(CONFIG, JSON.parse(saved));
+                
+                // Aplicar na UI
+                document.getElementById('togContinuous').classList.toggle('active', CONFIG.continuous);
+                document.getElementById('togWakeWord').classList.toggle('active', CONFIG.wakeWord);
+                document.getElementById('togVoice').classList.toggle('active', CONFIG.voiceResponse);
+                document.getElementById('togLearning').classList.toggle('active', CONFIG.learning);
+                document.getElementById('togSearch').classList.toggle('active', CONFIG.autoSearch);
+                document.getElementById('togProactive').classList.toggle('active', CONFIG.proactive);
+                document.getElementById('langSelect').value = CONFIG.lang;
+                document.getElementById('rateRange').value = CONFIG.rate;
+                document.getElementById('rateVal').textContent = CONFIG.rate + 'x';
+                document.getElementById('pitchRange').value = CONFIG.pitch;
+                document.getElementById('pitchVal').textContent = CONFIG.pitch;
+            }
+        }
+
+        // ==================== MEMÓRIA AVANÇADA ====================
+        function showMemoryDetails() {
+            const card = document.getElementById('memoryCard');
+            const list = document.getElementById('memoryList');
+            
+            let html = '';
+            
+            if (userMemory.name) {
+                html += `<p><strong>👤 Nome:</strong> ${userMemory.name}</p>`;
+            }
+            
+            if (Object.keys(userMemory.preferences).length > 0) {
+                html += `<p style="margin-top:0.5rem;"><strong>❤️ Preferências:</strong></p>`;
+                for (let [k, v] of Object.entries(userMemory.preferences)) {
+                    html += `<p>• ${k}: ${v}</p>`;
+                }
+            }
+            
+            if (userMemory.lastTopics.length > 0) {
+                html += `<p style="margin-top:0.5rem;"><strong>📌 Tópicos recentes:</strong> ${userMemory.lastTopics.join(', ')}</p>`;
+            }
+            
+            if (userMemory.facts.length > 0) {
+                html += `<p style="margin-top:0.5rem;"><strong>🧠 Fatos memorizados:</strong> ${userMemory.facts.length}</p>`;
+            }
+            
+            html += `<p style="margin-top:0.5rem;"><strong>🎯 Nível:</strong> ${calculateLevel()} (${userMemory.interactionCount} interações)</p>`;
+            
+            list.innerHTML = html || '<p>Ainda não tenho memórias. Converse comigo para eu aprender!</p>';
+            card.style.display = 'block';
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exportMemory() {
+            const data = {
+                memory: userMemory,
+                history: conversationHistory,
+                config: CONFIG,
+                exportedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `aura-memory-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL
+            URL.revokeObjectURL(url);
+            showToast('💾', 'Memória exportada com sucesso!');
+        }
+
+        function resetMemory() {
+            if (confirm('Tem certeza que deseja apagar toda a memória da Aura? Isso não pode ser desfeito.')) {
+                userMemory = {
+                    name: null,
+                    preferences: {},
+                    facts: [],
+                    lastTopics: [],
+                    interactionCount: 0,
+                    level: 1,
+                    createdAt: Date.now()
+                };
+                conversationHistory = [];
+                localStorage.removeItem('auraMemory');
+                localStorage.removeItem('auraHistory');
+                updateStats();
+                clearChat();
+                showToast('🔄', 'Memória resetada. Estou aprendendo do zero!');
+            }
+        }
+
+        // ==================== PWA & INSTALAÇÃO ====================
+        function registerSW() {
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'aura-v1';
+                    const urlsToCache = ['.'];
+                    
+                    self.addEventListener('install', e => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                                .then(() => self.skipWaiting())
+                        );
+                    });
+                    
+                    self.addEventListener('activate', e => {
+                        e.waitUntil(self.clients.claim());
+                    });
+                    
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(
+                            caches.match(e.request)
+                                .then(response => {
+                                    if (response) return response;
+                                    return fetch(e.request).catch(() => {
+                                        return new Response('Offline - Aura não pode acessar a internet agora');
+                                    });
+                                })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log('SW registrado'))
+                    .catch(err => console.log('SW falhou:', err));
+            }
+        }
+
+        function installApp() {
+            if ('beforeinstallprompt' in window && window.deferredPrompt) {
+                window.deferredPrompt.prompt();
+                window.deferredPrompt.userChoice.then(choice => {
+                    if (choice.outcome === 'accepted') {
+                        showToast('📲', 'Aura instalada na tela inicial!');
+                    }
+                    window.deferredPrompt = null;
+                });
+            } else {
+                // iOS ou navegador sem suporte direto
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                if (isIOS) {
+                    showToast('📱', 'Toque em compartilhar → "Adicionar à Tela de Início"');
+                } else {
+                    showToast('📱', 'Menu ⋮ → "Instalar aplicativo" ou "Adicionar à tela inicial"');
+                }
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+        });
+
+        // ==================== VISUALIZAÇÃO DE PARTÍCULAS ====================
+        function initParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = window.innerWidth < 380 ? 15 : 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (10 + Math.random() * 20) + 's';
+                p.style.width = (2 + Math.random() * 4) + 'px';
+                p.style.height = p.style.width;
+                p.style.opacity = 0.1 + Math.random() * 0.3;
+                container.appendChild(p);
+            }
+        }
+
+        // ==================== UTILITÁRIOS ====================
+        function showToast(icon, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastIcon').textContent = icon;
+            document.getElementById('toastMsg').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+
+        // ==================== ATALHOS DE TECLADO ====================
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                e.preventDefault();
+                toggleListening();
+            }
+            if (e.code === 'Escape') {
+                document.getElementById('panel').classList.remove('open');
+                document.getElementById('overlay').classList.remove('open');
+            }
+        });
+
+        // ==================== PREVENÇÃO DE SCROLL BOUNCE (iOS) ====================
+        document.addEventListener('touchmove', e => {
+            if (e.target.closest('.panel') || e.target.closest('.chat-container')) return;
+        }, { passive: true });
+
+        // ==================== DETECÇÃO DE CONEXÃO ====================
+        window.addEventListener('online', () => {
+            showToast('🌐', 'Conexão restaurada!');
+            document.getElementById('statusDot').classList.add('online');
+        });
+
+        window.addEventListener('offline', () => {
+            showToast('⚠️', 'Sem internet. Funcionamento limitado.');
+            document.getElementById('statusDot').classList.remove('online');
+        });
+
+        // ==================== INICIALIZAÇÃO DE VOZES ====================
+        if (synthesis) {
+            synthesis.onvoiceschanged = () => {
+                const voices = synthesis.getVoices();
+                console.log('Vozes carregadas:', voices.length);
+            };
+            // Forçar carregamento
+            synthesis.getVoices();
+        }
+
+        // ==================== MODO PROATIVO (EXPERIMENTAL) ====================
+        setInterval(() => {
+            if (CONFIG.proactive && !isListening && !isSpeaking && !isThinking) {
+                const hour = new Date().getHours();
+                const lastInteraction = conversationHistory.length > 0 
+                    ? Date.now() - conversationHistory[conversationHistory.length - 1].time 
+                    : Infinity;
+                
+                // Sugerir algo após 5 minutos de inatividade
+                if (lastInteraction > 300000 && Math.random() < 0.1) {
+                    const suggestions = [
+                        'Posso ajudar com alguma coisa?',
+                        'Que tal uma curiosidade do dia?',
+                        'Estou aqui se precisar de algo!',
+                        'Posso pesquisar algum assunto para você?'
+                    ];
+                    const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                    // Apenas mostrar visualmente, não falar sozinha para não assustar
+                    document.getElementById('statusText').textContent = `💡 ${suggestion}`;
+                }
+            }
+        }, 60000); // Verificar a cada minuto
+
+        // ==================== APRENDIZADO DE CONTEXTO AVANÇADO ====================
+        function analyzeContext() {
+            if (conversationHistory.length < 3) return null;
+            
+            const recent = conversationHistory.slice(-3);
+            const texts = recent.map(m => m.text.toLowerCase());
+            
+            // Detectar padrões de humor
+            const happyWords = ['bom', 'ótimo', 'excelente', 'legal', 'massa', 'top'];
+            const sadWords = ['ruim', 'triste', 'chato', 'difícil', 'péssimo'];
+            
+            let sentiment = 0;
+            texts.forEach(t => {
+                happyWords.forEach(w => { if (t.includes(w)) sentiment++; });
+                sadWords.forEach(w => { if (t.includes(w)) sentiment--; });
+            });
+            
+            return { sentiment, topics: userMemory.lastTopics };
+        }
+
+        // ==================== COMANDOS DE SISTEMA AVANÇADOS ====================
+        const systemCommands = {
+            'modo escuro': () => {
+                document.documentElement.style.setProperty('--bg', '#0a0a0f');
+                return 'Modo escuro ativado.';
+            },
+            'modo claro': () => {
+                document.documentElement.style.setProperty('--bg', '#f8fafc');
+                return 'Modo claro ativado.';
+            },
+            'aumentar voz': () => {
+                CONFIG.volume = Math.min(1, CONFIG.volume + 0.2);
+                return `Volume aumentado para ${Math.round(CONFIG.volume * 100)}%.`;
+            },
+            'diminuir voz': () => {
+                CONFIG.volume = Math.max(0, CONFIG.volume - 0.2);
+                return `Volume diminuído para ${Math.round(CONFIG.volume * 100)}%.`;
+            },
+            'calculadora': () => {
+                window.open('https://www.google.com/search?q=calculadora', '_blank');
+                return 'Abrindo calculadora...';
+            },
+            'traduzir': (text) => {
+                const query = encodeURIComponent(text.replace(/traduzir/gi, '').trim());
+                window.open(`https://translate.google.com/?sl=auto&tl=en&text=${query}`, '_blank');
+                return 'Abrindo Google Tradutor...';
+            }
+        };
+
+        // Integrar comandos de sistema ao processamento
+        const originalProcessInput = processInput;
+        processInput = async function(text) {
+            const lower = text.toLowerCase();
+            
+            for (let [cmd, handler] of Object.entries(systemCommands)) {
+                if (lower.includes(cmd)) {
+                    const response = handler(text);
+                    addMessage('user', text);
+                    addMessage('assistant', response);
+                    if (CONFIG.voiceResponse) speak(response);
+                    learnFromInteraction(text, response, 'system');
+                    return;
+                }
+            }
+            
+            return originalProcessInput(text);
+        };
+
+        // ==================== EXPORTAR PARA GLOBAL (DEBUG) ====================
+        window.aura = {
+            config: CONFIG,
+            memory: userMemory,
+            history: conversationHistory,
+            stats: () => ({
+                interactions: userMemory.interactionCount,
+                level: calculateLevel(),
+                facts: userMemory.facts.length,
+                topics: userMemory.lastTopics
+            }),
+            forget: () => resetMemory(),
+            teach: (fact) => {
+                userMemory.facts.push({ text: fact, date: Date.now() });
+                saveMemory();
+                return `Aprendido: "${fact}"`;
+            }
+        };
+
+        console.log('🧠 Aura IA inicializada. Digite `aura` no console para estatísticas.');
+    </script>
+</body>
+</html>
